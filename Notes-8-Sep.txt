@@ -31,6 +31,6 @@ Spark and Flume has a version mismatch.
 In order to run a command using a different user, sudo -u hdfc <Command>
 
 github
-karthikdutt/github1 --modified
+karthikdutt/github1 --modified 2
 
 
