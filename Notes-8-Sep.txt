@@ -1,0 +1,36 @@
+Services installed:
+Hbase
+HDFS
+Hive
+Hue
+Impala
+OOzie
+Solr
+Spark S
+Sqoop
+Yarn
+Flume
+
+mysql is preinstalled - mysql -u root -p cloudera
+show databases;
+use retail_db;
+
+
+search for cloudera exercise in google and explore;
+
+Hadoop production servers - How does it look like?
+
+Importatnt that Yarn and HDFS services are up and running before other services like HIve can be started.
+
+What is scala? Spark
+
+What is github? www.github.com/dgadiraju
+
+Spark and Flume has a version mismatch.
+
+In order to run a command using a different user, sudo -u hdfc <Command>
+
+github
+karthikdutt/github1 --modified
+
+
