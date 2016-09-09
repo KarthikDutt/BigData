@@ -1,0 +1,6 @@
+learn more about HDFS
+
+[cloudera@quickstart ~]$ sqoop eval --connect "jdbc:mysql://quickstart.cloudera:3306/retail_db" \
+> --username retail_dba \
+> --password cloudera \
+> --query "select * from departments"
