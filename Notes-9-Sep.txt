@@ -4,3 +4,12 @@ learn more about HDFS
 > --username retail_dba \
 > --password cloudera \
 > --query "select * from departments"
+
+
+sqoop user guide is available on google
+
+How to import non db data?
+
+IMport mysql table data to hive tables
+
+describe formatted departments; shows the hdfs path of the hive table

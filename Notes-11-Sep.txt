@@ -1,0 +1,28 @@
+Export-dir 
+--connect
+--username
+-P
+--direct
+--num-mappers
+--table
+--input-fields-terminated-by
+
+If input file has a different delimiter than , than use 'fields-terminated-by' column and not input-fields-terminated-by.
+
+Yet to test scheduling jobs in sqoop and merge part. 
+
+Flume: 
+
+check telnet is installed;
+install telnet if not : sudo yum -y install telnet
+
+Go through apache flume user guide.
+
+Configure two sources, 1 channel , 1 sink(2 sinks)
+COnfigure a replicating flow
+implement a failover sinkgroup
+
+
+flume-ng agent --name agent1 --conf /home/cloudera/flume/ --conf-file /home/cloudera/flume/flume.conf
+
+Moving files into and out of hdfs -- Pending for practise.

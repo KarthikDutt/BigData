@@ -1,0 +1,54 @@
+192.168.238.128 --My VM IP
+In order to access this VM from local , u can use hue on port 8888 
+or use winscp to connect to this server
+
+Yet to try: 
+1.sqoop merge 
+2. Export
+3. Incremental 
+
+Can access name node using the port 50070 on same IP.
+
+Setup a hdfs system with more clusters for personal use.
+
+
+Parameters for import: 
+
+--connect
+--connection-param-file
+--username
+--append 
+--boundary-query
+--columns
+--compression-codec
+--delete-target-dir
+--direct
+--query
+--fetch-size
+--num-mappers
+--table
+--target-dir
+--where
+
+
+Incremental import arguments:
+   --check-column <column>        Source column to check for incremental
+                                  change
+   --incremental <import-type>    Define an incremental import of type
+                                  'append' or 'lastmodified'
+   --last-value <value>           Last imported value in the incremental
+                                  check column
+
+								  
+
+Hive arguments:
+   --create-hive-table
+   --hive-database
+   --hive-import
+   --hive-overwrite
+   --hive-table
+   
+   
+   WHERE $CONDITIONS' \
+   
+   

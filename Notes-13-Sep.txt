@@ -1,0 +1,37 @@
+/bin/pyspark master local ===TO run pyspark in local mode
+/bin/pyspark master yarn --to run it in yarn mode. 
+
+Simple word count program. 
+
+sc is already initialised when you load pyspark.
+1. Create a RDD called data which will load the file/files
+dataRDD= sc.textFile(/user/cloudera/*)
+2. falatMap over this RDD to get individual words in each line.
+flatMapRDD=dataRDD.flatMap(lambda x: x.split(" ")) --Note Tuple should always be enclosed in braces. 
+
+3. map over this RDD to get the count of each word.
+instanceRDD=flatMapRDD.map(lambda x: (x,1))
+
+4. Reduce by Key over this RDD to get the count.
+count=instanceRDD.reduceByKey(lambda x,y: x+y)
+5. for i in count.collect(): ---Action function
+     print i
+	 
+
+	 
+	 
+Hive Context in pyspark:
+
+from pyspark import HiveContext
+sqlContext=HiveContext(sc)
+
+count=sqlContext.sql("Select count(1) from departments")
+--This creates an RDD called count;
+for i in count.collect()
+  print i
+  
+SQL COntext:
+
+from pyspark.sql import SQLContext,Row
+sqlContext=SQLContext(sc)
+sqlContext.sql("set spark.sql.shuffle.partitions=10")
