@@ -35,3 +35,5 @@ SQL COntext:
 from pyspark.sql import SQLContext,Row
 sqlContext=SQLContext(sc)
 sqlContext.sql("set spark.sql.shuffle.partitions=10")
+
+---------------------------------------------------------------
