@@ -1,0 +1,1 @@
+Repository contains some of the codes which was used and some notes taken during the hadoop example sessions.
