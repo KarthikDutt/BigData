@@ -1,0 +1,64 @@
+
+Public data example 
+
+dt,
+LandAverageTemperature,
+LandAverageTemperatureUncertainty,
+LandMaxTemperature,
+LandMaxTemperatureUncertainty,
+LandMinTemperature,
+LandMinTemperatureUncertainty,
+LandAndOceanAverageTemperature,
+LandAndOceanAverageTemperatureUncertainty
+
+
+>>> from pyspark.sql import SQLContext,Row
+>>> sqlContext=SQLContext(sc)
+>>> sqlContext.sql("set spark.sql.shuffle.partitions = 10")
+DataFrame[key: string, value: string]
+>>> dataFile = sc.textFile("/user/cloudera/GlobalTemp/GlobalTemperatures.csv")
+dataRow=dataTable.map(lambda t: Row(date=t[0],landAvgTemp=float(t[1]),landAvgTempUnc=float(t[2]),
+landMaxTemp=float(t[3]),landMaxTempUnc=float(t[4]),landMinTemp=float(t[5]),landMinTempUnc=float(t[6]),landOceanTemp=float(t[7]),landOceanTempUnc=float(t[8]))
+
+
+
+-------Program to load the globalTemperatures File to a sqlCOntext table
+-------Notice the 4th and 5th lines where I am filtering the header from getting loaded into table. 
+-------Still loading all the data as String in this example
+dataFile = sc.textFile("/user/cloudera/GlobalTemp/GlobalTemperatures.csv")
+header=dataRow.first()
+dataTable=dataFile.map(lambda x: x.split(","))
+dataRow=dataTable.map(lambda t: Row(date=t[0],landAvgTemp=t[1],landAvgTempUnc=t[2],landMaxTemp=t[3],landMaxTempUnc=t[4],landMinTemp=t[5],landMinTempUnc=t[6],landOceanTemp=t[7],landOceanTempUnc=t[8]))
+header=dataRow.first()
+dataRowF = dataRow.filter(lambda row: row != header)
+schemaTable=sqlContext.inferSchema(dataRowF)
+schemaTable.registerTempTable("temperatures")
+sqlResults=sqlContext.sql("select max(landAvgTemp) from temperatures")
+for i in sqlResults.collect():
+  print(i)
+  
+--------Program Ends
+
+
+-----Fix for float getting null values. Defined a function which will return 0 if the value is null and parsing this function for each array element before converting into float. 
+def FloatOrZero(value):
+    if value == "":
+        return 0
+    else:
+        return value
+  
+dataFile = sc.textFile("/user/cloudera/GlobalTemp/GlobalTemperatures.csv")
+header=dataFile.first()
+dataFile = dataFile.filter(lambda row: row != header)
+dataTable=dataFile.map(lambda x: x.split(","))
+dataRow=dataTable.map(lambda t: Row(date=(t[0]),landAvgTemp=float(FloatOrZero(t[1])),landAvgTempUnc=float(FloatOrZero(t[2])),landMaxTemp=float(FloatOrZero(t[3])),landMaxTempUnc=float(FloatOrZero(t[4])),landMinTemp=float(FloatOrZero(t[5])),landMinTempUnc=float(FloatOrZero(t[6])),landOceanTemp=float(FloatOrZero(t[7])),landOceanTempUnc=float(FloatOrZero(t[8]))))
+schemaTable=sqlContext.inferSchema(dataRow)
+schemaTable.registerTempTable("temperatures")
+sqlResults=sqlContext.sql("select max(landAvgTemp) from temperatures")
+for i in sqlResults.collect():
+  print(i)
+
+-----------------------------
+  --dataTableWONull=dataTable.map(lambda t: FloatOrZero(t))
+  --nullVal=dataTable.map(lambda t: FloatOrZero(t[1]))
+nullVal.filter (lambda x: x!='').take(1)
