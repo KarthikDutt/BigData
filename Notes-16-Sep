@@ -1,1 +1,47 @@
 
+
+-------------------------------Using dataFrames instead of inferSchema ------------------------------
+-------------------------------
+dataFile = sc.textFile("/user/cloudera/GlobalTemp/GlobalTemperatures.csv") --Read from data file
+header=dataFile.first()                                                    --Read the first line which is the header
+dataFile = dataFile.filter(lambda row: row != header)                      --Remove the header from the data list.
+dataTable=dataFile.map(lambda x: x.split(","))							   --Split the rows into columns using delimiters
+sqlContext=SQLContext(sc)												   --Import sqlContext
+dataFrame=sqlContext.createDataFrame(dataTable).collect()				   --Create dataFrame
+df=sqlContext.createDataFrame(dataFrame,['date','landAvgTemp','landAvgTempUnc','landMaxTemp','landMaxTempUnc','landMinTemp','landMinTempUnc','landOceanTemp','landOceanTempUnc'])  --define the column names
+dfCast=df.select(df.date.cast("date"),df.landAvgTemp.cast("float"),df.landAvgTempUnc.cast("float"),df.landMaxTemp.cast("float"),df.landMaxTempUnc.cast("float"),df.landMinTemp.cast("float"),df.landMinTempUnc.cast("float"),df.landOceanTemp.cast("float"),df.landOceanTempUnc.cast("float"))
+																		   --Casting each column to appropriate datatypes			
+dfTable1=dfCast.registerTempTable('temperatures')						   --registers the dataFrame as a table
+
+--------------------------------End of Prog ------------for the smallest dataset.
+
+
+
+
+-------------------------------------Larger data set---------------------With city/country information---------
+The Csv file contains 8.5M records
+-------The aim is to figure out the day on which highest AvgTemp was recorded over the last 100 years in all the indian cities. Output will be as follows:
+Date,City,Country,AvgTemp,latitude,longitude
+2012-01-04 , Delhi, India, 35.4345, NotAvail, NotAvail
+1965-05-25 , GandhiNagar, India, 33.444, NotAvail, NotAvail
+...... ....... .......... ........ ........ ........
+..... ........ ....... ....... ....... ......... 
+---------------------Time taken to load the data and calculate the above is approx 1 minute!!
+
+dataFileCity = sc.textFile("/user/cloudera/GlobalTemp/GlobalLandTemperaturesByCity.csv",minPartitions=100)
+header=dataFileCity.first() 
+dataFileCity = dataFileCity.filter(lambda row: row != header)  
+dataTableCity=dataFileCity.map(lambda x: x.split(","))	  
+sqlContext=SQLContext(sc)
+dataFrameCity=sqlContext.createDataFrame(dataTableCity,['date','AvgTemp','AvgTempUnc','City','Country','latitude','longitude'])
+dfCastCity=dataFrameCity.select(dataFrameCity.date.cast("date"),dataFrameCity.AvgTemp.cast("float"),dataFrameCity.AvgTempUnc.cast("float"),
+		     dataFrameCity.City.cast("string"),dataFrameCity.Country.cast("string"),dataFrameCity.latitude.cast("float"),dataFrameCity.longitude.cast("float"))
+dfTable2=dfCastCity.registerTempTable('temperaturesByCity')	
+
+sqlResult=sqlContext.sql("select city,max(AvgTemp) from temperaturesByCity where country = 'India' group by City")
+dfTable2=sqlResult.registerTempTable('temperaturesByIndCity')	
+
+sqlResult2=sqlContext.sql("select temperaturesByCity.* from temperaturesByCity join temperaturesByIndCity on temperaturesByCity.City=temperaturesByIndCity.City 
+						and temperaturesByCity.AvgTemp=temperaturesByIndCity._c1")
+
+------------------------ Program Ends-----------------
