@@ -1,0 +1,297 @@
+dataTitanic = sc.textFile("/user/cloudera/titanic/train.csv",minPartitions=2)
+header=dataFTitanic.first() 
+dataTitanicTrain = dataTitanic.filter(lambda row: row != header)  
+dataTableTitanic=dataTitanicTrain.map(lambda x: x.split(","))	  
+sqlContext=SQLContext(sc)
+dataFrameTitanic=sqlContext.createDataFrame(dataTableTitanic,['PassengerId','Survived','PClass','Name','Sex','Age','SibSp','Parch','Ticket','Fare','Cabin','Embarked']) 
+dfCastTitanic=dataFrameTitanic.select(dataFrameTitanic.PassengerId.cast("Int"),
+dataFrameTitanic.Survived.cast("Int"),dataFrameTitanic.PClass.cast("Int"),dataFrameTitanic.Name.cast("string"),
+dataFrameTitanic.Sex.cast("string"),dataFrameTitanic.Age.cast("Int"),dataFrameTitanic.SibSp.cast("Int"),dataFrameTitanic.Parch.cast("Int"),
+dataFrameTitanic.Ticket.cast("string"),dataFrameTitanic.Fare.cast("Float"),dataFrameTitanic.Cabin.cast("string"),dataFrameTitanic.Embarked.cast("string"))
+dfTitanicTable=dfCastTitanic.registerTempTable('Titanic')	
+
+
+
+-----------------------------------------------------------------------CDR_DATA
+
+dataCDR = sc.textFile("/user/cloudera/cdr_data/CDR_DATA_trunc.csv",minPartitions=5)
+header=dataCDR.first()
+dataCDR = dataCDR.filter(lambda row: row != header) 
+dataCDRRDD=dataCDR.map(lambda x: x.split(","))
+dataFrameCDR=sqlContext.createDataFrame(dataCDRRDD,['CDR_DATA_PARTITION_KEY','MSG_ID','MSG_ID2','MSG_ID_SERV','SPLIT_ROW_NUM','EXT_TRACKING_ID','TRANS_ID','ELEMENT_ID','TYPE_ID_USG','RATE_CLASS','BILL_CLASS','PROVIDER_ID', \
+'JURISDICTION','RATE_CURRENCY_CODE','ACCOUNT_NO','SUBSCR_NO','SUBSCR_NO_RESETS','EXTERNAL_ID','EXTERNAL_ID_TYPE','POINT_ORIGIN','COUNTRY_CODE_ORIGIN','COUNTRY_DIAL_CODE_ORIGIN', \
+'POINT_ID_ORIGIN','POINT_TAX_CODE_ORIGIN','POINT_TAX_CODE_TYPE_ORIGIN','POINT_TARGET','COUNTRY_CODE_TARGET','POINT_ID_TARGET','POINT_TAX_CODE_TARGET','POINT_TAX_CODE_TYPE_TARGET', \
+'BASE_AMT','RATE_DT','TRANS_DT','SECOND_DT','TAX_RATE_ACTIVE_DT','TAX_RATE_INACTIVE_DT','AUX_TAX_INFO','TIMEZONE','PRIMARY_UNITS','SECOND_UNITS','THIRD_UNITS','UNITS_CURRENCY_CODE', \
+'BILLING_UNITS_TYPE','PROFILE_ID','ANNOTATION','CUSTOMER_TAG','RATED_UNITS','AMOUNT','FOREIGN_AMOUNT','RATE_PERIOD','NO_BILL','COMP_STATUS','CDR_STATUS','FILE_ID','FILE_ID_SERV','REV_RCV_COST_CTR', \
+'ARCH_FLAG','UNROUNDED_AMOUNT','CORRIDOR_PLAN_ID','CELL_ID_ORIGIN','ORIG_TYPE_ID_USG','ACCESS_REGION_ORIGIN','ACCESS_REGION_TARGET','OPEN_ITEM_ID','NUM_RECORDS','AMOUNT_REDUCTION','AMOUNT_REDUCTION_ID', \
+'SEQNUM_RATE_USAGE','SEQNUM_RATE_USAGE_OVERRIDES','RAW_UNITS','RAW_UNITS_ROUNDED','AGGR_USAGE_ID','ZONE_CLASS', \
+'POINT_CLASS_ORIGIN','POINT_CLASS_TARGET','EQUIP_CLASS_CODE','COMPONENT_ID','TAX_PKG_COUNT','GEOCODE','ADD_IMPLIED_DECIMAL','RERATED_DT']) 
+dataCastCDR=dataFrameCDR.select(
+dataFrameCDR.CDR_DATA_PARTITION_KEY.cast("timestamp"), \
+dataFrameCDR.MSG_ID.cast("int"), \
+dataFrameCDR.MSG_ID2.cast("int"), \
+dataFrameCDR.MSG_ID_SERV.cast("int"), \
+dataFrameCDR.SPLIT_ROW_NUM.cast("int"), \
+dataFrameCDR.EXT_TRACKING_ID.cast("int"), \
+dataFrameCDR.TRANS_ID.cast("int"), \
+dataFrameCDR.ELEMENT_ID.cast("int"), \
+dataFrameCDR.TYPE_ID_USG.cast("int"), \
+dataFrameCDR.RATE_CLASS.cast("int"), \
+dataFrameCDR.BILL_CLASS.cast("int"), \
+dataFrameCDR.PROVIDER_ID.cast("int"), \
+dataFrameCDR.JURISDICTION.cast("int"), \
+dataFrameCDR.RATE_CURRENCY_CODE.cast("int"), \
+dataFrameCDR.ACCOUNT_NO.cast("int"), \
+dataFrameCDR.SUBSCR_NO.cast("int"), \
+dataFrameCDR.SUBSCR_NO_RESETS.cast("int"), \
+dataFrameCDR.EXTERNAL_ID.cast("string"), \
+dataFrameCDR.EXTERNAL_ID_TYPE.cast("int"), \
+dataFrameCDR.POINT_ORIGIN.cast("int"), \
+dataFrameCDR.COUNTRY_CODE_ORIGIN.cast("int"), \
+dataFrameCDR.COUNTRY_DIAL_CODE_ORIGIN.cast("int"), \
+dataFrameCDR.POINT_ID_ORIGIN.cast("int"), \
+dataFrameCDR.POINT_TAX_CODE_ORIGIN.cast("int"), \
+dataFrameCDR.POINT_TAX_CODE_TYPE_ORIGIN.cast("int"), \
+dataFrameCDR.POINT_TARGET.cast("int"), \
+dataFrameCDR.COUNTRY_CODE_TARGET.cast("int"), \
+dataFrameCDR.POINT_ID_TARGET.cast("int"), \
+dataFrameCDR.POINT_TAX_CODE_TARGET.cast("int"), \
+dataFrameCDR.POINT_TAX_CODE_TYPE_TARGET.cast("int"), \
+dataFrameCDR.BASE_AMT.cast("float"), \
+dataFrameCDR.RATE_DT.cast("timestamp"), \
+dataFrameCDR.TRANS_DT.cast("timestamp"), \
+dataFrameCDR.SECOND_DT.cast("timestamp"), \
+dataFrameCDR.TAX_RATE_ACTIVE_DT.cast("timestamp"), \
+dataFrameCDR.TAX_RATE_INACTIVE_DT.cast("timestamp"), \
+dataFrameCDR.AUX_TAX_INFO.cast("string"), \
+dataFrameCDR.TIMEZONE.cast("int"), \
+dataFrameCDR.PRIMARY_UNITS.cast("int"), \
+dataFrameCDR.SECOND_UNITS.cast("int"), \
+dataFrameCDR.THIRD_UNITS.cast("int"), \
+dataFrameCDR.UNITS_CURRENCY_CODE.cast("int"), \
+dataFrameCDR.BILLING_UNITS_TYPE.cast("int"), \
+dataFrameCDR.PROFILE_ID.cast("int"), \
+dataFrameCDR.ANNOTATION.cast("string"), \
+dataFrameCDR.CUSTOMER_TAG.cast("string"), \
+dataFrameCDR.RATED_UNITS.cast("int"), \
+dataFrameCDR.AMOUNT.cast("float"), \
+dataFrameCDR.FOREIGN_AMOUNT.cast("int"), \
+dataFrameCDR.RATE_PERIOD.cast("string"), \
+dataFrameCDR.NO_BILL.cast("int"), \
+dataFrameCDR.COMP_STATUS.cast("int"), \
+dataFrameCDR.CDR_STATUS.cast("int"), \
+dataFrameCDR.FILE_ID.cast("int"), \
+dataFrameCDR.FILE_ID_SERV.cast("int"), \
+dataFrameCDR.REV_RCV_COST_CTR.cast("int"), \
+dataFrameCDR.ARCH_FLAG.cast("int"), \
+dataFrameCDR.UNROUNDED_AMOUNT.cast("int"), \
+dataFrameCDR.CORRIDOR_PLAN_ID.cast("int"), \
+dataFrameCDR.CELL_ID_ORIGIN.cast("int"), \
+dataFrameCDR.ORIG_TYPE_ID_USG.cast("int"), \
+dataFrameCDR.ACCESS_REGION_ORIGIN.cast("string"), \
+dataFrameCDR.ACCESS_REGION_TARGET.cast("string"), \
+dataFrameCDR.OPEN_ITEM_ID.cast("int"), \
+dataFrameCDR.NUM_RECORDS.cast("int"), \
+dataFrameCDR.AMOUNT_REDUCTION.cast("int"), \
+dataFrameCDR.AMOUNT_REDUCTION_ID.cast("int"), \
+dataFrameCDR.SEQNUM_RATE_USAGE.cast("int"), \
+dataFrameCDR.SEQNUM_RATE_USAGE_OVERRIDES.cast("int"), \
+dataFrameCDR.RAW_UNITS.cast("int"), \
+dataFrameCDR.RAW_UNITS_ROUNDED.cast("int"), \
+dataFrameCDR.AGGR_USAGE_ID.cast("int"), \
+dataFrameCDR.ZONE_CLASS.cast("int"), \
+dataFrameCDR.POINT_CLASS_ORIGIN.cast("int"), \
+dataFrameCDR.POINT_CLASS_TARGET.cast("int"), \
+dataFrameCDR.EQUIP_CLASS_CODE.cast("int"), \
+dataFrameCDR.COMPONENT_ID.cast("int"), \
+dataFrameCDR.TAX_PKG_COUNT.cast("int"), \
+dataFrameCDR.GEOCODE.cast("string"), \
+dataFrameCDR.ADD_IMPLIED_DECIMAL.cast("int"), \
+dataFrameCDR.RERATED_DT.cast("timestamp"))
+dataCDRTable=dataCastCDR.registerTempTable('CDR_DATA')	
+sqlRes=sqlContext.sql("select * from CDR_DATA")
+for i in sqlRes.collect():
+  print i
+
+
+  
+  Number of CDRs by jurisdiction:
+
+Row(jurisdiction=24445, _c1=200)
+Row(jurisdiction=25100, _c1=2863)
+Row(jurisdiction=24300, _c1=37)
+Row(jurisdiction=24101, _c1=757)
+Row(jurisdiction=25101, _c1=126)
+Row(jurisdiction=24301, _c1=50)
+Row(jurisdiction=24501, _c1=614)
+Row(jurisdiction=24103, _c1=1)
+Row(jurisdiction=25104, _c1=351)
+Row(jurisdiction=25105, _c1=27)
+Row(jurisdiction=24305, _c1=2)
+Row(jurisdiction=24105, _c1=8)
+Row(jurisdiction=24106, _c1=160)
+Row(jurisdiction=24308, _c1=11)
+Row(jurisdiction=24309, _c1=3277)
+Row(jurisdiction=24511, _c1=2484)
+Row(jurisdiction=24512, _c1=5430)
+Row(jurisdiction=25112, _c1=129)
+Row(jurisdiction=25114, _c1=86)
+Row(jurisdiction=25116, _c1=86)
+Row(jurisdiction=25120, _c1=43)
+Row(jurisdiction=25124, _c1=36)
+Row(jurisdiction=25125, _c1=206)
+Row(jurisdiction=25126, _c1=206)
+Row(jurisdiction=25133, _c1=43)
+Row(jurisdiction=25136, _c1=43)
+Row(jurisdiction=25138, _c1=43)y 
+Row(jurisdiction=25149, _c1=430)
+Row(jurisdiction=24350, _c1=462)
+Row(jurisdiction=24150, _c1=76)
+Row(jurisdiction=24351, _c1=96)
+Row(jurisdiction=24354, _c1=1530)
+Row(jurisdiction=25156, _c1=86)
+Row(jurisdiction=25157, _c1=86)
+Row(jurisdiction=25163, _c1=1075)
+Row(jurisdiction=25166, _c1=43)
+Row(jurisdiction=24191, _c1=80)
+Row(jurisdiction=24200, _c1=2357)
+Row(jurisdiction=0, _c1=6200)
+Row(jurisdiction=24000, _c1=6)
+Row(jurisdiction=24001, _c1=3)
+Row(jurisdiction=25001, _c1=43)
+Row(jurisdiction=24002, _c1=12)
+Row(jurisdiction=24003, _c1=4)
+Row(jurisdiction=25005, _c1=48)
+Row(jurisdiction=25015, _c1=43)
+
+
+
+
+Group by orgin country code:
+16/09/28 15:30:12 INFO scheduler.DAGScheduler: Job 17 finished: collect at <stdin>:1, took 23.936876 s
+Row(country_code_origin=276, _c1=718)
+Row(country_code_origin=0, _c1=29281)
+
+
+Group by element_id:
+Row(element_id=4300, _c1=1)
+Row(element_id=5100, _c1=1)
+Row(element_id=5108, _c1=2)
+Row(element_id=5131, _c1=2)
+Row(element_id=5154, _c1=2)
+Row(element_id=6385, _c1=2)
+Row(element_id=5112, _c1=4)
+Row(element_id=3900, _c1=5)
+Row(element_id=5025, _c1=6)
+Row(element_id=5116, _c1=7)
+Row(element_id=3531, _c1=10)
+Row(element_id=5142, _c1=10)
+Row(element_id=6614, _c1=10)
+Row(element_id=4308, _c1=11)
+Row(element_id=4352, _c1=12)
+Row(element_id=5801, _c1=12)
+Row(element_id=3500, _c1=17)
+Row(element_id=3546, _c1=19)
+Row(element_id=4225, _c1=22)
+Row(element_id=4312, _c1=23)
+Row(element_id=5804, _c1=25)
+Row(element_id=5104, _c1=26)
+Row(element_id=3508, _c1=26)
+Row(element_id=3908, _c1=28)
+Row(element_id=4625, _c1=30)
+Row(element_id=3512, _c1=44)
+Row(element_id=3425, _c1=50)
+Row(element_id=4730, _c1=56)
+Row(element_id=4743, _c1=56)
+Row(element_id=5114, _c1=58)
+Row(element_id=6220, _c1=58)
+Row(element_id=3912, _c1=60)
+Row(element_id=4342, _c1=60)
+Row(element_id=3825, _c1=62)
+Row(element_id=3931, _c1=68)
+Row(element_id=4706, _c1=71)
+Row(element_id=4323, _c1=72)
+Row(element_id=3952, _c1=72)
+Row(element_id=5531, _c1=76)
+Row(element_id=6606, _c1=86)
+Row(element_id=5500, _c1=87)
+Row(element_id=5504, _c1=87)
+Row(element_id=3540, _c1=95)
+Row(element_id=3516, _c1=97)
+Row(element_id=6612, _c1=111)
+Row(element_id=6219, _c1=124)
+Row(element_id=6215, _c1=134)
+Row(element_id=6391, _c1=161)
+Row(element_id=5425, _c1=174)
+Row(element_id=7060, _c1=180)
+Row(element_id=4314, _c1=203)
+Row(element_id=6611, _c1=212)
+Row(element_id=4704, _c1=239)
+Row(element_id=3923, _c1=245)
+Row(element_id=5803, _c1=248)
+Row(element_id=6209, _c1=268)
+Row(element_id=5581, _c1=277)
+Row(element_id=4740, _c1=280)
+Row(element_id=6310, _c1=290)
+Row(element_id=6629, _c1=340)
+Row(element_id=6254, _c1=348)
+Row(element_id=4304, _c1=360)
+Row(element_id=3942, _c1=360)
+Row(element_id=5512, _c1=364)
+Row(element_id=3504, _c1=400)
+Row(element_id=6212, _c1=402)
+Row(element_id=6609, _c1=489)
+Row(element_id=3514, _c1=500)
+Row(element_id=6387, _c1=594)
+Row(element_id=4702, _c1=728)
+Row(element_id=6300, _c1=812)
+Row(element_id=5516, _c1=908)
+Row(element_id=4700, _c1=964)
+Row(element_id=3904, _c1=1004)
+Row(element_id=3914, _c1=1187)
+Row(element_id=5575, _c1=1385)
+Row(element_id=6610, _c1=2040)
+Row(element_id=6301, _c1=3038)
+Row(element_id=5502, _c1=3601)
+Row(element_id=5514, _c1=5401)
+
+
+
+Group by point origin:
+Row(point_origin=None, _c1=26122)
+Row(point_origin=-609434624, _c1=2878)
+Row(point_origin=-1904401920, _c1=504)
+Row(point_origin=390565376, _c1=159)
+Row(point_origin=0, _c1=150)
+Row(point_origin=60, _c1=100)
+Row(point_origin=-1609434624, _c1=61)
+Row(point_origin=89, _c1=19)
+Row(point_origin=40, _c1=6)
+
+
+
+List of accounts nos making calls whose rated amount > 1000000
+Row(point_id_target=20013, external_id=u'2.62073E+14', amount=14771125.0)
+Row(point_id_target=20013, external_id=u'2.62073E+14', amount=14771125.0)
+Row(point_id_target=20013, external_id=u'2.62075E+14', amount=14771125.0)
+Row(point_id_target=20013, external_id=u'2.62077E+14', amount=14771125.0)
+Row(point_id_target=20013, external_id=u'2.62077E+14', amount=14771125.0)
+Row(point_id_target=20013, external_id=u'2.62077E+14', amount=14771125.0)
+Row(point_id_target=20013, external_id=u'2.62077E+14', amount=14771125.0)
+Row(point_id_target=20013, external_id=u'2.62075E+14', amount=14771125.0)
+Row(point_id_target=20013, external_id=u'2.62075E+14', amount=14771125.0)
+Row(point_id_target=20013, external_id=u'2.62075E+14', amount=14771125.0)
+Row(point_id_target=20013, external_id=u'2.62075E+14', amount=14771125.0)
+Row(point_id_target=20013, external_id=u'2.62075E+14', amount=14771125.0)
+Row(point_id_target=20013, external_id=u'2.62075E+14', amount=14771125.0)
+Row(point_id_target=20013, external_id=u'2.62075E+14', amount=14771125.0)
+Row(point_id_target=20013, external_id=u'2.62075E+14', amount=14771125.0)
+Row(point_id_target=20013, external_id=u'2.62077E+14', amount=14771125.0)
+
+
+
+Pattern of cdrs rated in test systems:
+
+
+
+sqoop export -fs local -jt local --connect jdbc:mysql://quickstart.cloudera:3036/retail_db --username retail_dba --password cloudera --table cdr_data --export-dir /home/cloudera/Downloads/CDR_DATA.csv
